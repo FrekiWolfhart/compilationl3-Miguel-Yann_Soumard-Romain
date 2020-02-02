@@ -1,19 +1,199 @@
 Package sc;
 
 Helpers
-
-lettre = [['a' .. 'z'] + ['A' .. 'Z']];
+ digit      =       ['0'..'9'];
+ lower      =       ['a'..'z'];
+ upper      =       ['A'..'Z'];
 
 Tokens
 
-espaces = (' ' | 13 | 10)+;
-commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
+
+ entier     =       'entier';
+ si         =       'si';
+ alors      =       'alors';
+ sinon      =       'sinon';
+ tantque    =       'tantque';
+ faire      =       'faire';
+ retour     =       'retour';
+
+
+ l_acc      =       '{';
+ r_acc      =       '}';
+ l_par      =       '(';
+ r_par      =       ')';
+ l_brck     =       '[';
+ r_brck     =       ']';
+ semicolon  =       ';';
+ comma      =       ',';
+
+ read       =       'lire';
+ write      =       'ecrire';
+
+ or         =       '|';
+ and        =       '&';
+
+ equal      =       '=';
+ plus       =       '+';
+ minus      =       '-';
+ mul        =       '*';
+ div        =       '/';
+
+ inf        =       '<';
+ not        =       '!';
+ numbers    =       digit*;
+ id         =       (lower | upper) (digit | lower | upper)*;
+
+
+ blank      =       (' ' | 13 | 10);
 
 Ignored Tokens
-
-espaces, commentaire;
+ blank;
 
 Productions
 
-programme = optdecvar listedecfonc ;
+/**** Déclaration de fonction ****/
 
+
+program =
+      {optvarf} lvar semicolon listf
+    | {listf} listf
+    ;
+
+listf =
+      {list} function listf
+    | {empty}
+    ;
+
+function =
+        {func} id param lvar semicolon block
+    | {func2} id param block
+    ;
+
+lvar =
+      {lvar1} var comma lvar
+    | {lvar2} var
+    ;
+
+param =
+      {param1} l_par lvar r_par
+    | {param2} l_par r_par
+    ;
+
+var =
+      {var1} entier id
+    | {var2} entier id l_brck numbers r_brck
+    ;
+
+
+/**** Bloc d'instructions ****/
+
+block =
+      {block}           l_acc suiteinst r_acc
+    ;
+
+suiteinst =
+      {linst}           inst semicolon suiteinst
+    | {continst}        continst suiteinst
+    | {end}             inst
+    ;
+
+continst =
+      {if}              if
+//    | {if_else}         if_else
+    | {while}           while
+      ;
+
+inst =
+      {affectation}     affectation
+    | {write}           write l_par expr r_par
+    | {return}          retour expr
+    | {call}            call
+    | {empty}
+    ;
+
+if =
+      {si}              si expr alors block
+    | {si2}             si expr alors block sinonblock
+    ;
+
+sinonblock =
+      {sinon}           sinon block
+    ;
+
+while =
+      {tantque}         tantque expr faire block
+    ;
+
+affectation =
+        {aff}           id equal expr
+     |  {aff2}          id l_brck [tag1]:expr r_brck equal [tag2]:expr
+     ;
+
+/* expression */
+
+expr =
+      {expr01}          expr or expr1
+    | {expr02}          expr1
+    ;
+
+expr1 =
+      {expr11}          expr1 and expr2
+    | {expr12}          expr2
+    ;
+
+expr2 =
+      {expr21}          expr2 equal expr3
+    | {expr22}          expr2 inf expr3
+    | {expr23}          expr3
+    ;
+
+expr3 =
+      {expr31}          expr3 plus expr4
+    | {expr32}          expr3 minus expr4
+    | {expr33}          expr4
+    ;
+
+expr4 =
+      {expr41}          expr4 div expr5
+    | {expr42}          expr4 mul expr5
+    | {expr43}          expr5
+    ;
+
+expr5 =
+      {expr51}          not l_par expr r_par
+    | {expr52}          expr6
+    ;
+
+
+
+expr6 =
+      {expr61}          l_par expr r_par
+    | {expr62}          expr7
+    | {expr63}          expr8
+    |                   read l_par r_par
+    | {expr64}          call
+    ;
+
+expr7 =
+      {expr71}          id
+    | {expr72}          id l_brck expr r_brck
+    ;
+
+expr8 =
+      {expr81}          numbers
+    ;
+
+call =
+      {call1}           id paramfinal
+    ;
+
+paramfinal =
+      {paramfinal1}     l_par r_par
+    | {paramfinal2}     l_par lexpr r_par
+    ;
+
+
+lexpr =
+      {lexpr1}          expr comma lexpr
+    | {lexpr2}          expr
+    ;
