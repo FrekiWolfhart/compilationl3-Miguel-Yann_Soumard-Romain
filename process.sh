@@ -1,18 +1,38 @@
 #!/bin/bash
 
+<<<<<<< HEAD
+
+cleanDotClassFiles() {
+    find -name *.class -delete && echo "All *.class files have been erased"
+}
+
+cleanSCFiles() {
+    cd test/input
+    rm *.sc && echo "all *.sc files in test/input have been erased"
+    cd ../..
+}
+
+deleteSCDirectory() {
+    [ ! -d src/sc ] && echo "no sc directory in src" && exit 1
+    rm -r src/sc && echo "src/sc package deleted"
+}
+
+cleanAll() {
+    cleanDotClassFiles
+    cleanSCFiles
+    deleteSCDirectory
+}
+
+=======
+>>>>>>> 3f54ef81ab7a70a503a8a752212a3056bbef8f05
 testAllFiles() {
     cd src
     for file in $(ls ../test/input); do
         echo -n "$file: "
         java Compiler ../test/input/$file
     done
-
     cd ..
-    cd test/input
-    rm *.sc
-    cd ../..
 }
-#find -name *.class -delete
 
 compile() {
     java -jar sablecc.jar src/grammaireL.sablecc
@@ -21,19 +41,29 @@ compile() {
     cd ..
 }
 
-[ $# -eq 0 ] && exit 0
 
-if [ $1 == "-c" -o $1 == "--compile" ]; then
-    compile
-    shift
-fi
+help() {
+    echo "Usage: ./process.sh [-c | --compile] [-t | --test]"
+    echo "-c | --compile: Creates the grammar with sableCC and compile Compiler"
+    echo "-t | --test: Tests Compiler on the examples of /test/input"
+    echo "-clsc: Cleans sc files created after .l files have been tested"
+    echo '-clgr: Cleans grammar classes created by sablecc'
+    echo "--clean: Cleans everything, compiled classes included"
+}
 
-[ $# -eq 0 ] && exit 0
+[ $# -eq 0 ] && help && exit 0
 
-
-if [ $1 == '-t' -o $1 == "--test" ]; then
-    echo "Test"
-    testAllFiles
-fi
+for arg in $@; do
+    case $arg in
+        -c)         compile;;
+        --compile)  compile;;
+        -t)         testAllFiles;;
+        --test)     testAllFiles;;
+        -clsc)      cleanSCFiles;;
+        -clgr)      deleteSCDirectory;;
+        --clean)    cleanAll;;
+        *)          help;;
+    esac
+done
 
 exit 0
