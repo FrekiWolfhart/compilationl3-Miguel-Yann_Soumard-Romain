@@ -1,6 +1,5 @@
 #!/bin/bash
 
-<<<<<<< HEAD
 
 cleanDotClassFiles() {
     find -name *.class -delete && echo "All *.class files have been erased"
@@ -23,8 +22,6 @@ cleanAll() {
     deleteSCDirectory
 }
 
-=======
->>>>>>> 3f54ef81ab7a70a503a8a752212a3056bbef8f05
 testAllFiles() {
     cd src
     for file in $(ls ../test/input); do
