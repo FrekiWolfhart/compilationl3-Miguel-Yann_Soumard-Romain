@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 testAllFiles() {
     cd src
     for file in $(ls ../test/input); do
