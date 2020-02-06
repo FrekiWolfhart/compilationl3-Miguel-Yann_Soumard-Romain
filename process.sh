@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 cleanDotClassFiles() {
     find -name *.class -delete && echo "All *.class files have been erased"
 }
@@ -38,15 +37,15 @@ compile() {
     cd ..
 }
 
-
 help() {
-    echo "Usage: ./process.sh [-c | --compile] [-t | --test]"
+    echo "Usage: ./process.sh [-c | --compile] [-t | --test] [-clsc] [-clgr] [--clean]"
     echo "-c | --compile: Creates the grammar with sableCC and compile Compiler"
     echo "-t | --test: Tests Compiler on the examples of /test/input"
     echo "-clsc: Cleans sc files created after .l files have been tested"
     echo '-clgr: Cleans grammar classes created by sablecc'
     echo "--clean: Cleans everything, compiled classes included"
 }
+
 
 [ $# -eq 0 ] && help && exit 0
 
