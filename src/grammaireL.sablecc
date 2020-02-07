@@ -51,8 +51,8 @@ Ignored Tokens
 
 Productions
 
-/**** Déclaration de fonction ****/
 
+/**** Déclaration de fonction ****/
 
 program =
       {optvarf} lvar semicolon listf
@@ -99,9 +99,8 @@ suiteinst =
 
 continst =
       {if}              if
-//    | {if_else}         if_else
     | {while}           while
-      ;
+    ;
 
 inst =
       {affectation}     affectation
@@ -128,6 +127,7 @@ affectation =
         {aff}           id equal expr
      |  {aff2}          id l_brck [tag1]:expr r_brck equal [tag2]:expr
      ;
+
 
 /* expression */
 
@@ -164,8 +164,6 @@ expr5 =
     | {expr52}          expr6
     ;
 
-
-
 expr6 =
       {expr61}          l_par expr r_par
     | {expr62}          expr7
@@ -191,7 +189,6 @@ paramfinal =
       {paramfinal1}     l_par r_par
     | {paramfinal2}     l_par lexpr r_par
     ;
-
 
 lexpr =
       {lexpr1}          expr comma lexpr
