@@ -15,10 +15,15 @@ deleteSCDirectory() {
     rm -r src/sc && echo "src/sc package deleted"
 }
 
+deleteSc2saFile() {
+    [ -f src/sc2sa.java ] && rm src/sc2sa.java
+}
+
 cleanAll() {
     cleanDotClassFiles
     cleanSCFiles
     deleteSCDirectory
+    deleteSc2saFile
 }
 
 testAllFiles() {
@@ -37,11 +42,19 @@ compile() {
     cd ..
 }
 
+createSc2sa() {
+    if [ ! -f src/sc2sa.java ]; then
+        echo "creation of sc2sa.sh"
+        [ -f createSc2sa.sh ] && ./createSc2sa.sh
+    fi
+}
+
 help() {
     echo "Usage: ./process.sh [-c | --compile] [-t | --test] [-clsc] [-clgr] [--clean]"
     echo "-c | --compile: Creates the grammar with sableCC and compile Compiler"
     echo "-t | --test: Tests Compiler on the examples of /test/input"
     echo "-clsc: Cleans sc files created after .l files have been tested"
+    echo "-clclass: Cleans class files"
     echo '-clgr: Cleans grammar classes created by sablecc'
     echo "--clean: Cleans everything, compiled classes included"
 }
@@ -55,7 +68,9 @@ for arg in $@; do
         --compile)  compile;;
         -t)         testAllFiles;;
         --test)     testAllFiles;;
+        -s)         createSc2sa;;
         -clsc)      cleanSCFiles;;
+        -clclass)   cleanDotClassFiles;;
         -clgr)      deleteSCDirectory;;
         --clean)    cleanAll;;
         *)          help;;
