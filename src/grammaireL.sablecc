@@ -66,7 +66,7 @@ listf =
     ;
 
 function =
-        {func} id param lvar semicolon block
+      {func} id param lvar semicolon block
     | {func2} id param block
     ;
 
