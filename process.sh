@@ -16,7 +16,7 @@ deleteSCDirectory() {
 }
 
 deleteSc2saFile() {
-    [ -f src/sc2sa.java ] && rm src/sc2sa.java
+    [ -f src/sc2sa.java ] && [ ! -s src/sc2sa.java ] && rm src/sc2sa.java
 }
 
 cleanAll() {

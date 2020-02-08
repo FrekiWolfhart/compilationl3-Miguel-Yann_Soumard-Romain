@@ -25,22 +25,22 @@ public class Compiler
 	}
 	catch (IOException e) {
 	    e.printStackTrace();
-	} 
+	}
 	try {
 	    // Create a Parser instance.
 	    Parser p = new Parser(new Lexer(br));
 	    // Parse the input.
 	    Start tree = p.parse();
-	    
+
 	    System.out.println("[SC]");
 	    tree.apply(new Sc2Xml(baseName));
 
-	    /*System.out.println("[SA]");
+	    System.out.println("[SA]");
 	    Sc2sa sc2sa = new Sc2sa();
 	    tree.apply(sc2sa);
 	    SaNode saRoot = sc2sa.getRoot();
 	    new Sa2Xml(saRoot, baseName);
-		    
+		/*    
 	    System.out.println("[TABLE SYMBOLES]");
 	    Ts table = new Sa2ts(saRoot).getTableGlobale();
 	    table.afficheTout(baseName);
@@ -60,9 +60,9 @@ public class Compiler
 	    System.out.println("[FLOW GRAPH SOLVE]");
 	    FgSolution fgSolution = new FgSolution(nasm, fg);
 	    fgSolution.affiche(baseName);*/
-	    
 
-	    
+
+
 	}
 	catch(Exception e){
 	    System.out.println(e.getMessage());
@@ -77,5 +77,5 @@ public class Compiler
 	}
 	return s;
     }
-    
+
 }
