@@ -45,9 +45,10 @@ Tokens
 
 
  blank      =       (' ' | 13 | 10);
+ comment    = '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
 
 Ignored Tokens
- blank;
+ blank, comment;
 
 Productions
 
