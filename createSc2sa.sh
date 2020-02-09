@@ -13,7 +13,7 @@ checksScDir() {
 
 generateSc2saFile() {
     echo -e "import sc.analysis.DepthFirstAdapter;\n"
-    echo -e "public class sc2sa extends DepthFirstAdapter {\n"
+    echo -e "public class Sc2sa extends DepthFirstAdapter {\n"
 
     for file in $(ls src/sc/node|grep -i java$|tr -d ".java"); do
         echo -e "\t@Override"

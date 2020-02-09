@@ -372,37 +372,69 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseASiIf(ASiIf node) {
+        SaExp expr = null;
+        SaInst block = null;
 
+        node.getExpr().apply(this);
+        expr = (SaExp) this.returnValue;
+
+        node.getBlock().apply(this);
+        block = (SaInst) this.returnValue;
+
+        this.returnValue = new SaInstSi(expr, block, null);
 	}
 
 	@Override
 	public void caseASinonSinonblock(ASinonSinonblock node) {
+        SaInst block = null;
 
+        node.getBlock().apply(this);
+        block = (SaInst) this.returnValue;
+
+        this.returnValue = new SaInstSi(null, null, block);
 	}
 
 	@Override
-	public void caseATntqueWhile(ATntqueWhile node) {
+	public void caseATantqueWhile(ATntqueWhile node) {
+        SaExp test = null;
+        SaInst faire = null;
 
+        node.getTest().apply(this);
+        test = (SaExp) this.returnValue;
+
+        node.getFaire().apply(this);
+        faire = (SaInst) this.returnValue;
+
+        this.returnValue = new SaInstTantQue(test, faire);
 	}
 
 	@Override
-	public void caseAVr1Vr(AVr1Vr node) {
-
+	public void caseAVar1Var(AVar1Var node) {
+        this.returnValue = new SaVarSimple(node.getId().getText());
 	}
 
 	@Override
-	public void caseAVr2Vr(AVr2Vr node) {
+	public void caseAVar2Var(AVar2Var node) {
+        SaExp indice = null;
+        node.getIndice().apply(this);
+        indice = (SaExp) this.returnValue;
 
+        this.returnValue = new SaVarIndicee(node.getId().getText(), indice);
 	}
 
 	@Override
 	public void caseAWhileContinst(AWhileContinst node) {
-
+        node.getWhile().apply(this);
 	}
 
 	@Override
 	public void caseAWriteInst(AWriteInst node) {
+        SaExp arg = null;
+        node.getExpr().apply(this);
 
+        arg = (SaExp) this.returnValue;
+
+        this.returnValue = new SaInstEcriture(arg);
 	}
 
 	@Override
