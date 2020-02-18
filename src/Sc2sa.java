@@ -308,7 +308,7 @@ public class Sc2sa extends DepthFirstAdapter {
         node.getExpr().apply(this);
         head = (SaExp) this.returnValue;
 
-        node.getLExpr().apply(this);
+        node.getLexpr().apply(this);
         tail = (SaLExp) this.returnValue;
 
         this.returnValue = new SaLExp(head, tail);
@@ -345,7 +345,16 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAListListf(AListListf node) {
+      SaDec head = null;
+      SaLDec tail = null;
 
+      node.getFunction().apply(this);
+      head = (SaDec) this.returnValue;
+
+      node.getListf().apply(this);
+      tail = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaLDec(head, tail);
 	}
 
 	@Override
@@ -378,27 +387,46 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAOptrfProgrm(AOptrfProgrm node) {
+      SaLDec variables = null;
+      SaLDec functions = null;
 
+      node.getLvar().apply(this);
+      variables = (SaLDec) this.returnValue;
+
+      node.getListf().apply(this):
+      functions = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaProg(variables, functions);
 	}
 
 	@Override
 	public void caseAPrm1Prm(APrm1Prm node) {
+      SaLDec parameters = null;
 
+      node.getLvar().apply(this);
+      parameters = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaDecFonc(null, parameters, null, null);
 	}
 
 	@Override
 	public void caseAPrm2Prm(APrm2Prm node) {
-
+      this.returnValue = null;
 	}
 
 	@Override
 	public void caseAPrmfinl1Prmfinl(APrmfinl1Prmfinl node) {
-
-	}
+      this.returnValue = null;
+    }
 
 	@Override
 	public void caseAPrmfinl2Prmfinl(APrmfinl2Prmfinl node) {
+      SaLExp head = null;
 
+      node.getLexpr().apply(this);
+      head = (SaLExp) this.returnValue;
+
+      this.returnValue = new SaLExp(head, null);
 	}
 
 	@Override
