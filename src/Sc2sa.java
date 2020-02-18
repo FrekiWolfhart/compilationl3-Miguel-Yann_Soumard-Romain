@@ -297,77 +297,164 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAIfContinst(AIfContinst node) {
-
+        node.getIf().apply(this);
 	}
 
 	@Override
 	public void caseALexpr1Lexpr(ALexpr1Lexpr node) {
+        SaExp head = null;
+        SaLExp tail = null;
 
+        node.getExpr().apply(this);
+        head = (SaExp) this.returnValue;
+
+        node.getLexpr().apply(this);
+        tail = (SaLExp) this.returnValue;
+
+        this.returnValue = new SaLExp(head, tail);
 	}
 
 	@Override
 	public void caseALexpr2Lexpr(ALexpr2Lexpr node) {
+      SaExp head = null;
 
+      node.getExpr().apply(this);
+      head = (SaExp) this.returnValue;
+
+      this.returnValue = new SaLExp(head, null);
 	}
 
 	@Override
 	public void caseALinstSuiteinst(ALinstSuiteinst node) {
+      SaInst head = null;
+      SaLInst tail = null;
 
+      node.getInst().apply(this);
+      head = (SaInst) this.returnValue;
+
+      node.getSuiteInst().apply(this);
+      tail = (SaLinst) this.returnValue;
+
+      this.returnValue = new SaLInst(head, tail);
 	}
 
 	@Override
 	public void caseAListfProgrm(AListfProgrm node) {
-
+      node.getListf().apply(this);
 	}
 
 	@Override
 	public void caseAListListf(AListListf node) {
+      SaDec head = null;
+      SaLDec tail = null;
 
+      node.getFunction().apply(this);
+      head = (SaDec) this.returnValue;
+
+      node.getListf().apply(this);
+      tail = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaLDec(head, tail);
 	}
 
 	@Override
 	public void caseALr1Lr(ALr1Lr node) {
+      //Je considère que ce truc correspond à {lvar1} var comma lvar
 
+      SaDec head = null;
+      SaLDec tail = null;
+
+      node.getVar().apply(this);
+      head = (SaDec) this.returnValue;
+
+      node.getLvar().apply(this);
+      tail = (SaDec) this.returnValue;
+
+      this.returnValue = new SaLDec(head, tail);
 	}
 
 	@Override
 	public void caseALr2Lr(ALr2Lr node) {
+      //Je considère que ce truc correspond à {lvar2} var
 
+      SaDec head = null;
+
+      node.getVar().apply(this);
+      head = (SaDec) this.returnValue;
+
+      this.returnValue = new SaLDec(head, null);
 	}
 
 	@Override
 	public void caseAOptrfProgrm(AOptrfProgrm node) {
+      SaLDec variables = null;
+      SaLDec functions = null;
 
+      node.getLvar().apply(this);
+      variables = (SaLDec) this.returnValue;
+
+      node.getListf().apply(this):
+      functions = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaProg(variables, functions);
 	}
 
 	@Override
 	public void caseAPrm1Prm(APrm1Prm node) {
+      SaLDec parameters = null;
 
+      node.getLvar().apply(this);
+      parameters = (SaLDec) this.returnValue;
+
+      this.returnValue = new SaDecFonc(null, parameters, null, null);
 	}
 
 	@Override
 	public void caseAPrm2Prm(APrm2Prm node) {
-
+      this.returnValue = null;
 	}
 
 	@Override
 	public void caseAPrmfinl1Prmfinl(APrmfinl1Prmfinl node) {
-
-	}
+      this.returnValue = null;
+    }
 
 	@Override
 	public void caseAPrmfinl2Prmfinl(APrmfinl2Prmfinl node) {
+      SaLExp head = null;
 
+      node.getLexpr().apply(this);
+      head = (SaLExp) this.returnValue;
+
+      this.returnValue = new SaLExp(head, null);
 	}
 
 	@Override
 	public void caseAReturnInst(AReturnInst node) {
+      SaExp val = null;
 
+      node.getRetour().apply(this);
+      val = (SaExp) this.returnValue;
+
+      this.returnValue = new SaInstRetour(val);
 	}
 
 	@Override
 	public void caseASi2If(ASi2If node) {
+      SaExp expr = null;
+      SaInst block = null;
 
+      node.getExpr().apply(this);
+      expr = (SaExp) this.returnValue;
+
+      node.getBlock().apply(this);
+      block = (SaInst) this.returnValue;
+
+      this.returnValue = new SaInstSi(expr, block, caseASinonSinonblock);
+      //Je ne suis pas certain de si la dernière ligne va fonctionner ou pas,
+      //mais cela me semble être la seule solution possible.
+      //Donc, en cas d'une erreur, revoir cette ligne pourrait
+      //être une bonne option.'
 	}
 
 	@Override
