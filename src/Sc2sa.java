@@ -1,4 +1,5 @@
 import sc.analysis.DepthFirstAdapter;
+import sc.node.*;
 import sa.*;
 
 public class Sc2sa extends DepthFirstAdapter {
@@ -6,8 +7,8 @@ public class Sc2sa extends DepthFirstAdapter {
     private SaNode returnValue;
 
 	@Override
-	public void caseAAff2Affecttion(AAff2Affecttion node) {
-		System.out.println("caseAAff2Affecttion");
+	public void caseAAff2Affectation(AAff2Affectation node) {
+		System.out.println("caseAAff2Affectation");
 
 		String name = "";
 		SaExp exp = null;
@@ -29,8 +30,8 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAAffAffecttion(AAffAffecttion node) {
-		System.out.println("caseAAffAffecttion");
+	public void caseAAffAffectation(AAffAffectation node) {
+		System.out.println("caseAAffAffectation");
 		SaVar lhs = null;
 		SaExp rhs = null;
 
@@ -44,14 +45,14 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAAffecttionInst(AAffecttionInst node) {
+	public void caseAAffectationInst(AAffectationInst node) {
 		node.getAffectation().apply(this);
 	}
 
 	@Override
 	public void caseABlockBlock(ABlockBlock node) {
 		SaLInst suiteInst = null;
-		node.getSuiteInst().apply(this):
+		node.getSuiteinst().apply(this);
 		suiteInst = (SaLInst) this.returnValue;
 		this.returnValue = new SaInstBloc(suiteInst);
 	}
@@ -72,8 +73,8 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAContinstSuiteinst(AContinstSuiteinst node) {
-		node.getContinst.apply(this):
-		node.getSuiteInst.apply(this);
+		node.getContinst().apply(this);
+		node.getSuiteinst().apply(this);
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAEndSuiteinst(AEndSuiteinst node) {
-		node.getInst().apply();
+		node.getInst().apply(this);
 	}
 
 	@Override
@@ -218,7 +219,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr61Expr6(AExpr61Expr6 node) {
-		node.getExpr7().apply(this);
+		node.getExpr().apply(this);
 	}
 
 	@Override
@@ -233,7 +234,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr64Expr6(AExpr64Expr6 node) {
-		node.getCall().apply();
+		node.getCall().apply(this);
 	}
 
 	@Override
@@ -262,7 +263,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAFunc2Function(AFunc2Function node) {
-		String id = node.getId.getText();
+		String id = node.getId().getText();
 		SaLDec parametres = null;
 		SaLDec variables = null;
 		SaInst corps = null;
@@ -270,7 +271,7 @@ public class Sc2sa extends DepthFirstAdapter {
 		node.getParam().apply(this);
 		parametres = (SaLDec) this.returnValue;
 
-		node.getBlock.apply(this);
+		node.getBlock().apply(this);
 		corps = (SaInst) this.returnValue;
 
 		this.returnValue = new SaDecFonc(id, parametres, variables, corps);
@@ -278,7 +279,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAFuncFunction(AFuncFunction node) {
-		String id = node.getId.getText();
+		String id = node.getId().getText();
 		SaLDec parametres = null;
 		SaLDec variables = null;
 		SaInst corps = null;
@@ -289,7 +290,7 @@ public class Sc2sa extends DepthFirstAdapter {
 		node.getLvar().apply(this);
 		variables = (SaLDec) this.returnValue;
 
-		node.getBlock.apply(this);
+		node.getBlock().apply(this);
 		corps = (SaInst) this.returnValue;
 
 		this.returnValue = new SaDecFonc(id, parametres, variables, corps);
@@ -332,14 +333,14 @@ public class Sc2sa extends DepthFirstAdapter {
       node.getInst().apply(this);
       head = (SaInst) this.returnValue;
 
-      node.getSuiteInst().apply(this);
-      tail = (SaLinst) this.returnValue;
+      node.getSuiteinst().apply(this);
+      tail = (SaLInst) this.returnValue;
 
       this.returnValue = new SaLInst(head, tail);
 	}
 
 	@Override
-	public void caseAListfProgrm(AListfProgrm node) {
+	public void caseAListfProgram(AListfProgram node) {
       node.getListf().apply(this);
 	}
 
@@ -358,7 +359,7 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseALr1Lr(ALr1Lr node) {
+	public void caseALvar1Lvar(ALvar1Lvar node) {
       //Je considère que ce truc correspond à {lvar1} var comma lvar
 
       SaDec head = null;
@@ -368,13 +369,13 @@ public class Sc2sa extends DepthFirstAdapter {
       head = (SaDec) this.returnValue;
 
       node.getLvar().apply(this);
-      tail = (SaDec) this.returnValue;
+      tail = (SaLDec) this.returnValue;
 
       this.returnValue = new SaLDec(head, tail);
 	}
 
 	@Override
-	public void caseALr2Lr(ALr2Lr node) {
+	public void caseALvar2Lvar(ALvar2Lvar node) {
       //Je considère que ce truc correspond à {lvar2} var
 
       SaDec head = null;
@@ -386,21 +387,21 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAOptrfProgrm(AOptrfProgrm node) {
+	public void caseAOptvarfProgram(AOptvarfProgram node) {
       SaLDec variables = null;
       SaLDec functions = null;
 
       node.getLvar().apply(this);
       variables = (SaLDec) this.returnValue;
 
-      node.getListf().apply(this):
+      node.getListf().apply(this);
       functions = (SaLDec) this.returnValue;
 
       this.returnValue = new SaProg(variables, functions);
 	}
 
 	@Override
-	public void caseAPrm1Prm(APrm1Prm node) {
+	public void caseAParam1Param(AParam1Param node) {
       SaLDec parameters = null;
 
       node.getLvar().apply(this);
@@ -410,21 +411,21 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAPrm2Prm(APrm2Prm node) {
+	public void caseAParam2Param(AParam2Param node) {
       this.returnValue = null;
 	}
 
 	@Override
-	public void caseAPrmfinl1Prmfinl(APrmfinl1Prmfinl node) {
+	public void caseAParamfinal1Paramfinal(AParamfinal1Paramfinal node) {
       this.returnValue = null;
     }
 
 	@Override
-	public void caseAPrmfinl2Prmfinl(APrmfinl2Prmfinl node) {
-      SaLExp head = null;
+	public void caseAParamfinal2Paramfinal(AParamfinal2Paramfinal node) {
+      SaExp head = null;
 
       node.getLexpr().apply(this);
-      head = (SaLExp) this.returnValue;
+      head = (SaExp) this.returnValue;
 
       this.returnValue = new SaLExp(head, null);
 	}
@@ -450,7 +451,7 @@ public class Sc2sa extends DepthFirstAdapter {
       node.getBlock().apply(this);
       block = (SaInst) this.returnValue;
 
-      this.returnValue = new SaInstSi(expr, block, caseASinonSinonblock);
+      this.returnValue = new SaInstSi(expr, block, null);
       //Je ne suis pas certain de si la dernière ligne va fonctionner ou pas,
       //mais cela me semble être la seule solution possible.
       //Donc, en cas d'une erreur, revoir cette ligne pourrait
@@ -482,11 +483,11 @@ public class Sc2sa extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseATantqueWhile(ATntqueWhile node) {
+	public void caseATantqueWhile(ATantqueWhile node) {
         SaExp test = null;
         SaInst faire = null;
 
-        node.getTest().apply(this);
+        node.getExpr().apply(this);
         test = (SaExp) this.returnValue;
 
         node.getFaire().apply(this);
@@ -503,7 +504,7 @@ public class Sc2sa extends DepthFirstAdapter {
 	@Override
 	public void caseAVar2Var(AVar2Var node) {
         SaExp indice = null;
-        node.getIndice().apply(this);
+        node.getNumbers().apply(this);
         indice = (SaExp) this.returnValue;
 
         this.returnValue = new SaVarIndicee(node.getId().getText(), indice);
@@ -523,315 +524,4 @@ public class Sc2sa extends DepthFirstAdapter {
 
         this.returnValue = new SaInstEcriture(arg);
 	}
-
-	@Override
-	public void caseEOF(EOF node) {
-
-	}
-
-	@Override
-	public void caseInlidToken(InlidToken node) {
-
-	}
-
-	@Override
-	public void caseNode(Node node) {
-
-	}
-
-	@Override
-	public void casePAffecttion(PAffecttion node) {
-
-	}
-
-	@Override
-	public void casePBlock(PBlock node) {
-
-	}
-
-	@Override
-	public void casePCll(PCll node) {
-
-	}
-
-	@Override
-	public void casePContinst(PContinst node) {
-
-	}
-
-	@Override
-	public void casePExpr1(PExpr1 node) {
-
-	}
-
-	@Override
-	public void casePExpr2(PExpr2 node) {
-
-	}
-
-	@Override
-	public void casePExpr3(PExpr3 node) {
-
-	}
-
-	@Override
-	public void casePExpr4(PExpr4 node) {
-
-	}
-
-	@Override
-	public void casePExpr5(PExpr5 node) {
-
-	}
-
-	@Override
-	public void casePExpr6(PExpr6 node) {
-
-	}
-
-	@Override
-	public void casePExpr7(PExpr7 node) {
-
-	}
-
-	@Override
-	public void casePExpr8(PExpr8 node) {
-
-	}
-
-	@Override
-	public void casePExpr(PExpr node) {
-
-	}
-
-	@Override
-	public void casePFunction(PFunction node) {
-
-	}
-
-	@Override
-	public void casePIf(PIf node) {
-
-	}
-
-	@Override
-	public void casePInst(PInst node) {
-
-	}
-
-	@Override
-	public void casePLexpr(PLexpr node) {
-
-	}
-
-	@Override
-	public void casePListf(PListf node) {
-
-	}
-
-	@Override
-	public void casePLr(PLr node) {
-
-	}
-
-	@Override
-	public void casePPrmfinl(PPrmfinl node) {
-
-	}
-
-	@Override
-	public void casePPrm(PPrm node) {
-
-	}
-
-	@Override
-	public void casePProgrm(PProgrm node) {
-
-	}
-
-	@Override
-	public void casePSinonblock(PSinonblock node) {
-
-	}
-
-	@Override
-	public void casePSuiteinst(PSuiteinst node) {
-
-	}
-
-	@Override
-	public void casePVr(PVr node) {
-
-	}
-
-	@Override
-	public void casePWhile(PWhile node) {
-
-	}
-
-	@Override
-	public void caseStrt(Strt node) {
-
-	}
-
-	@Override
-	public void caseSwitchble(Switchble node) {
-
-	}
-
-	@Override
-	public void caseSwitch(Switch node) {
-
-	}
-
-	@Override
-	public void caseTAlors(TAlors node) {
-
-	}
-
-	@Override
-	public void caseTAnd(TAnd node) {
-
-	}
-
-	@Override
-	public void caseTBlnk(TBlnk node) {
-
-	}
-
-	@Override
-	public void caseTComm(TComm node) {
-
-	}
-
-	@Override
-	public void caseTDi(TDi node) {
-
-	}
-
-	@Override
-	public void caseTEntier(TEntier node) {
-
-	}
-
-	@Override
-	public void caseTEqul(TEqul node) {
-
-	}
-
-	@Override
-	public void caseTFire(TFire node) {
-
-	}
-
-	@Override
-	public void caseTId(TId node) {
-
-	}
-
-	@Override
-	public void caseTInf(TInf node) {
-
-	}
-
-	@Override
-	public void caseTLAcc(TLAcc node) {
-
-	}
-
-	@Override
-	public void caseTLBrck(TLBrck node) {
-
-	}
-
-	@Override
-	public void caseTLPr(TLPr node) {
-
-	}
-
-	@Override
-	public void caseTMinus(TMinus node) {
-
-	}
-
-	@Override
-	public void caseTMul(TMul node) {
-
-	}
-
-	@Override
-	public void caseTNot(TNot node) {
-
-	}
-
-	@Override
-	public void caseTNumbers(TNumbers node) {
-
-	}
-
-	@Override
-	public void caseToken(Token node) {
-
-	}
-
-	@Override
-	public void caseTOr(TOr node) {
-
-	}
-
-	@Override
-	public void caseTPlus(TPlus node) {
-
-	}
-
-	@Override
-	public void caseTRAcc(TRAcc node) {
-
-	}
-
-	@Override
-	public void caseTRBrck(TRBrck node) {
-
-	}
-
-	@Override
-	public void caseTRed(TRed node) {
-
-	}
-
-	@Override
-	public void caseTRetour(TRetour node) {
-
-	}
-
-	@Override
-	public void caseTRPr(TRPr node) {
-
-	}
-
-	@Override
-	public void caseTSemicolon(TSemicolon node) {
-
-	}
-
-	@Override
-	public void caseTSi(TSi node) {
-
-	}
-
-	@Override
-	public void caseTSinon(TSinon node) {
-
-	}
-
-	@Override
-	public void caseTTntque(TTntque node) {
-
-	}
-
-	@Override
-	public void caseTWrite(TWrite node) {
-
-	}
-
 }
