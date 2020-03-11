@@ -6,7 +6,11 @@ public class Sc2sa extends DepthFirstAdapter {
 
     private SaNode returnValue;
 
-	@Override
+	public SaNode getRoot(){
+            return this.returnValue;
+        }
+
+        @Override
 	public void caseAAff2Affectation(AAff2Affectation node) {
 		System.out.println("caseAAff2Affectation");
 
