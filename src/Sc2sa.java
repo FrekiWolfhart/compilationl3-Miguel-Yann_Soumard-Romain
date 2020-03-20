@@ -262,7 +262,8 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr81Expr8(AExpr81Expr8 node) {
-        node.getNumbers().apply(this);
+            int val = Integer.parseInt(node.getNumbers().getText());
+            this.returnValue = new SaExpInt(val);
 	}
 
 	@Override
@@ -345,7 +346,10 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAListfProgram(AListfProgram node) {
-      node.getListf().apply(this);
+            SaLDec functions = null;
+            node.getListf().apply(this);
+            functions = (SaLDec) this.returnValue;
+            this.returnValue = new SaProg(null, functions);
 	}
 
 	@Override
