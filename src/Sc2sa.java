@@ -248,7 +248,12 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr71Expr7(AExpr71Expr7 node) {
-        node.getId().apply(this);
+            SaVar var_4_op = null;
+
+            node.getId().apply(this);
+            var_4_op = (SaVar) this.returnValue;
+
+            this.returnValue = new SaExpVar(var_4_op);
 	}
 
 	@Override
@@ -506,7 +511,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAVar1Var(AVar1Var node) {
-        this.returnValue = new SaVarSimple(node.getId().getText());
+        this.returnValue = new SaDecVar(node.getId().getText());
 	}
 
 	@Override
