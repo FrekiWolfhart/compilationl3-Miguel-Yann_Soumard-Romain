@@ -189,7 +189,7 @@ public class Sc2sa extends DepthFirstAdapter {
         op1 = (SaExp) this.returnValue;
         node.getExpr5().apply(this);
         op2 = (SaExp) this.returnValue;
-        this.returnValue = new SaExpMult(op1, op2);
+        this.returnValue = new SaExpDiv(op1, op2);
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class Sc2sa extends DepthFirstAdapter {
         op1 = (SaExp) this.returnValue;
         node.getExpr5().apply(this);
         op2 = (SaExp) this.returnValue;
-        this.returnValue = new SaExpDiv(op1, op2);
+        this.returnValue = new SaExpMult(op1, op2);
 	}
 
 	@Override
@@ -248,12 +248,8 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr71Expr7(AExpr71Expr7 node) {
-            SaVar var_4_op = null;
-
-            node.getId().apply(this);
-            var_4_op = (SaVar) this.returnValue;
-
-            this.returnValue = new SaExpVar(var_4_op);
+            String name = node.getId().getText();
+            this.returnValue = new SaAppel(name, null);
 	}
 
 	@Override
