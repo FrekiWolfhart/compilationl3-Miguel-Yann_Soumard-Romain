@@ -460,7 +460,7 @@ public class Sc2sa extends DepthFirstAdapter {
 	public void caseASi2If(ASi2If node) {
       SaExp expr = null;
 	  SaInst block = null;
-	  SaInst sinonblock = null;
+	  SaLInst sinonblock = null;
 
       node.getExpr().apply(this);
       expr = (SaExp) this.returnValue;
@@ -469,9 +469,9 @@ public class Sc2sa extends DepthFirstAdapter {
 	  block = (SaInst) this.returnValue;
 
 	  node.getSinonblock().apply(this);
-	  sinonblock = (SaInst) this.returnValue;
+	  sinonblock = (SaLInst) this.returnValue;
 
-      this.returnValue = new SaInstSi(expr, block, sinonblock);
+	  this.returnValue = new SaInstSi(expr, block, sinonblock.getTete());
 	}
 
 	@Override
@@ -495,7 +495,7 @@ public class Sc2sa extends DepthFirstAdapter {
         node.getBlock().apply(this);
         block = (SaInst) this.returnValue;
 
-        this.returnValue = new SaInstSi(null, null, block);
+        this.returnValue = new SaLInst(block, null);
 	}
 
 	@Override
