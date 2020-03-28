@@ -12,8 +12,6 @@ public class Sc2sa extends DepthFirstAdapter {
 
         @Override
 	public void caseAAff2Affectation(AAff2Affectation node) {
-		System.out.println("caseAAff2Affectation");
-
 		String name = "";
 		SaExp exp = null;
 
@@ -30,12 +28,10 @@ public class Sc2sa extends DepthFirstAdapter {
 		rhs = (SaExp) this.returnValue;
 
 		this.returnValue = new SaInstAffect(lhs, rhs);
-
 	}
 
 	@Override
 	public void caseAAffAffectation(AAffAffectation node) {
-		System.out.println("caseAAffAffectation");
 		SaVar lhs = null;
 		SaExp rhs = null;
 
@@ -119,7 +115,8 @@ public class Sc2sa extends DepthFirstAdapter {
         node.getExpr1().apply(this);
         op1 = (SaExp) this.returnValue;
         node.getExpr2().apply(this);
-        op2 = (SaExp) this.returnValue;
+		op2 = (SaExp) this.returnValue;
+		this.returnValue = new SaExpAnd(op1, op2);
 	}
 
 	@Override
@@ -249,7 +246,7 @@ public class Sc2sa extends DepthFirstAdapter {
 	@Override
 	public void caseAExpr71Expr7(AExpr71Expr7 node) {
             String name = node.getId().getText();
-            this.returnValue = new SaAppel(name, null);
+            this.returnValue = new SaExpVar(new SaVarSimple(name));
 	}
 
 	@Override
@@ -397,6 +394,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAOptvarfProgram(AOptvarfProgram node) {
+		
       SaLDec variables = null;
       SaLDec functions = null;
 
@@ -406,7 +404,8 @@ public class Sc2sa extends DepthFirstAdapter {
       node.getListf().apply(this);
       functions = (SaLDec) this.returnValue;
 
-      this.returnValue = new SaProg(variables, functions);
+	  this.returnValue = new SaProg(variables, functions);
+	  
 	}
 
 	@Override
@@ -452,19 +451,19 @@ public class Sc2sa extends DepthFirstAdapter {
 	@Override
 	public void caseASi2If(ASi2If node) {
       SaExp expr = null;
-      SaInst block = null;
+	  SaInst block = null;
+	  SaInst sinonblock = null;
 
       node.getExpr().apply(this);
       expr = (SaExp) this.returnValue;
 
       node.getBlock().apply(this);
-      block = (SaInst) this.returnValue;
+	  block = (SaInst) this.returnValue;
 
-      this.returnValue = new SaInstSi(expr, block, null);
-      //Je ne suis pas certain de si la dernière ligne va fonctionner ou pas,
-      //mais cela me semble être la seule solution possible.
-      //Donc, en cas d'une erreur, revoir cette ligne pourrait
-      //être une bonne option.'
+	  node.getSinonblock().apply(this);
+	  sinonblock = (SaInst) this.returnValue;
+
+      this.returnValue = new SaInstSi(expr, block, sinonblock);
 	}
 
 	@Override
