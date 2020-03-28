@@ -73,8 +73,16 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAContinstSuiteinst(AContinstSuiteinst node) {
+		SaInst head = null;
+		SaLInst tail = null;
+
 		node.getContinst().apply(this);
+		head = (SaInst) this.returnValue;
+
 		node.getSuiteinst().apply(this);
+		tail = (SaLInst) this.returnValue;
+
+		this.returnValue = new SaLInst(head, tail);
 	}
 
 	@Override
