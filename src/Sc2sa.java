@@ -537,11 +537,9 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAVar2Var(AVar2Var node) {
-        SaExp indice = null;
-        node.getNumbers().apply(this);
-        indice = (SaExp) this.returnValue;
-
-        this.returnValue = new SaVarIndicee(node.getId().getText(), indice);
+        int indice = Integer.parseInt(node.getNumbers().getText());
+		
+        this.returnValue = new SaDecTab(node.getId().getText(), indice);
 	}
 
 	@Override
