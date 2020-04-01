@@ -32,11 +32,13 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAAffAffectation(AAffAffectation node) {
-		SaVar var = null;
+		String name = "";
+
+		SaVarSimple var = null;
 		SaExp value = null;
 
-		node.getId().apply(this);
-		var = (SaVar) this.returnValue;
+		name = node.getId().getText();
+		var = new SaVarSimple(name);
 
 		node.getExpr().apply(this);
 		value = (SaExp) this.returnValue;
