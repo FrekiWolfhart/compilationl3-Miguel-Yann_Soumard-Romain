@@ -32,16 +32,16 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAAffAffectation(AAffAffectation node) {
-		SaVar lhs = null;
-		SaExp rhs = null;
+		SaVar var = null;
+		SaExp value = null;
 
 		node.getId().apply(this);
-		lhs = (SaVar) this.returnValue;
+		var = (SaVar) this.returnValue;
 
 		node.getExpr().apply(this);
-		rhs = (SaExp) this.returnValue;
+		value = (SaExp) this.returnValue;
 
-		this.returnValue = new SaInstAffect(lhs, rhs);
+		this.returnValue = new SaInstAffect(var, value);
 	}
 
 	@Override
@@ -243,7 +243,12 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr64Expr6(AExpr64Expr6 node) {
+		SaAppel call = null;
+
 		node.getCall().apply(this);
+		call = (SaAppel) this.returnValue;
+
+		this.returnValue = new SaExpAppel(call);
 	}
 
 	@Override
@@ -253,17 +258,28 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAExpr71Expr7(AExpr71Expr7 node) {
-            String name = node.getId().getText();
-            this.returnValue = new SaExpVar(new SaVarSimple(name));
+			String name = null;
+			SaVar simple = null;
+			
+			name = node.getId().getText();
+
+			simple = new SaVarSimple(name);
+
+            this.returnValue = new SaExpVar(simple);
 	}
 
 	@Override
 	public void caseAExpr72Expr7(AExpr72Expr7 node) {
 		String id = node.getId().getText();
-		SaLExp args = null;
+		SaExp args = null;
+		SaVar indicee = null;
+
 		node.getExpr().apply(this);
-		args = (SaLExp) this.returnValue;
-		this.returnValue = new SaAppel(id, args);
+		args = (SaExp) this.returnValue;
+
+		indicee = new SaVarIndicee(id, args);
+
+		this.returnValue = new SaExpVar(indicee);
 	}
 
 	@Override
@@ -374,8 +390,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseALvar1Lvar(ALvar1Lvar node) {
-      //Je considère que ce truc correspond à {lvar1} var comma lvar
-
+      
       SaDec head = null;
       SaLDec tail = null;
 
@@ -390,8 +405,7 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseALvar2Lvar(ALvar2Lvar node) {
-      //Je considère que ce truc correspond à {lvar2} var
-
+      
       SaDec head = null;
 
       node.getVar().apply(this);
@@ -423,7 +437,8 @@ public class Sc2sa extends DepthFirstAdapter {
       node.getLvar().apply(this);
       parameters = (SaLDec) this.returnValue;
 
-      this.returnValue = new SaDecFonc(null, parameters, null, null);
+	  //this.returnValue = new SaDecFonc(null, parameters, null, null);
+	  this.returnValue = parameters;
 	}
 
 	@Override
@@ -438,19 +453,20 @@ public class Sc2sa extends DepthFirstAdapter {
 
 	@Override
 	public void caseAParamfinal2Paramfinal(AParamfinal2Paramfinal node) {
-      SaExp head = null;
+      SaLExp head = null;
 
       node.getLexpr().apply(this);
-      head = (SaExp) this.returnValue;
+      head = (SaLExp) this.returnValue;
 
-      this.returnValue = new SaLExp(head, null);
+	  //this.returnValue = new SaLExp(head, null);
+	  this.returnValue = head;
 	}
 
 	@Override
 	public void caseAReturnInst(AReturnInst node) {
       SaExp val = null;
 
-      node.getRetour().apply(this);
+      node.getExpr().apply(this);
       val = (SaExp) this.returnValue;
 
       this.returnValue = new SaInstRetour(val);
