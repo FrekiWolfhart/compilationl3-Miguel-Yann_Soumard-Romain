@@ -524,7 +524,7 @@ public class Sc2sa extends DepthFirstAdapter {
         node.getExpr().apply(this);
         test = (SaExp) this.returnValue;
 
-        node.getFaire().apply(this);
+        node.getBlock().apply(this);
         faire = (SaInst) this.returnValue;
 
         this.returnValue = new SaInstTantQue(test, faire);
