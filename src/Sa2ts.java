@@ -1,7 +1,4 @@
 import ts.*;
-
-import java.time.LocalTime;
-
 import sa.*;
 
 public class Sa2ts extends SaDepthFirstVisitor<Void>{
