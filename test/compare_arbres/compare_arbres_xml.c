@@ -23,7 +23,7 @@ int compare_arbres_rec(noeud *racine1, noeud *racine2, int verbose, int compare_
       }
       return 0;
     }
-    
+
     if(!racine1->texte && racine2->texte){
       if(verbose){
 	for(i=0; i<profondeur; i++) printf(" ");
@@ -31,7 +31,7 @@ int compare_arbres_rec(noeud *racine1, noeud *racine2, int verbose, int compare_
       }
       return 0;
     }
-    
+
     if(racine1->texte && racine2->texte){
       if(strcmp(racine1->texte, racine2->texte)){
 	if(verbose){
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
    int verbose = 0;
    int compare_text = 0;
    int i;
-   
+
    if(argc < 3){
      print_help_message(argv[0]);
      exit(1);
@@ -93,14 +93,14 @@ int main(int argc, char *argv[])
        exit(1);
      }
    }
-   
-   
+
+
    yyin = fopen(argv[1], "r");
    if(yyin == NULL){
      fprintf(stderr, "impossible d'ouvrir le fichier %s\n", argv[1]);
      exit(1);
    }
-   
+
    fprintf(stderr, "analyse du fichier : %s\n", argv[1]);
    racine1 = analyseur_xml();
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
      fprintf(stderr, "impossible d'ouvrir le fichier %s\n", argv[2]);
      exit(1);
    }
-   
+
    fprintf(stderr, "analyse du fichier : %s\n", argv[2]);
    racine2 = analyseur_xml();
 
@@ -123,19 +123,19 @@ int main(int argc, char *argv[])
    /*   affiche_arbre(racine1);
    printf("\n");
    affiche_arbre(racine2);*/
-   
+
    fprintf(stderr, "comparaison des arbres\n");
    resultat = compare_arbres(racine1, racine2, verbose, compare_text);
    libere_arbre(racine1);
    libere_arbre(racine2);
 
 
-   if(resultat){ 
-     fprintf(stderr,"arbres egaux\n");
+   if(resultat){
+     fprintf(stderr,"\033[1;32marbres egaux \e[m\n");
      return 0;
    }
-   else{ 
-     fprintf(stderr,"arbres différents\n");
+   else{
+     fprintf(stderr,"\033[1;31marbres différents \e[m\n");
      return 1;
    }
 

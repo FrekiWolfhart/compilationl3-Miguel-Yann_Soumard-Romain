@@ -28,12 +28,22 @@ cleanAll() {
 
 testAllFiles() {
     cd src
-    for file in $(ls ../test/input); do
+    for file in $(ls ../test/input|grep -i ".l$"); do
         echo -n "$file: "
         java Compiler ../test/input/$file
     done
     cd ..
 }
+
+compareAllTrees() {
+    cd test/compare_arbres
+    for file in $(ls ../sa-ref); do
+        ./compare_arbres_xml ../sa-ref/$file ../input/$file
+        echo
+    done
+    cd ../..
+}
+
 
 compile() {
     java -jar sablecc.jar src/grammaireL.sablecc
@@ -42,21 +52,15 @@ compile() {
     cd ..
 }
 
-createSc2sa() {
-    if [ ! -f src/sc2sa.java ]; then
-        echo "creation of sc2sa.sh"
-        [ -f createSc2sa.sh ] && ./createSc2sa.sh
-    fi
-}
-
 help() {
-    echo "Usage: ./process.sh [-c | --compile] [-t | --test] [-clsc] [-clgr] [--clean]"
-    echo "-c | --compile: Creates the grammar with sableCC and compile Compiler"
-    echo "-t | --test: Tests Compiler on the examples of /test/input"
-    echo "-clsc: Cleans sc files created after .l files have been tested"
-    echo "-clclass: Cleans class files"
-    echo '-clgr: Cleans grammar classes created by sablecc'
-    echo "--clean: Cleans everything, compiled classes included"
+    echo "Usage: ./process.sh [-c] [-t] [-clsc] [-clgr] [--clean]"
+    echo
+    echo "  -c:         Creates the grammar with sableCC and compile Compiler"
+    echo "  -t:         Tests Compiler on the examples of /test/input"
+    echo "  -clsc:      Cleans sc files created after .l files have been tested"
+    echo "  -clclass:   Cleans class files"
+    echo '  -clgr:      Cleans grammar classes created by sablecc'
+    echo "  --clean:    Cleans everything, compiled classes included"
 }
 
 
@@ -65,10 +69,8 @@ help() {
 for arg in $@; do
     case $arg in
         -c)         compile;;
-        --compile)  compile;;
         -t)         testAllFiles;;
-        --test)     testAllFiles;;
-        -s)         createSc2sa;;
+        -T)         compareAllTrees;;
         -clsc)      cleanSCFiles;;
         -clclass)   cleanDotClassFiles;;
         -clgr)      deleteSCDirectory;;
