@@ -16,23 +16,27 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
     public Void visit(SaDecVar node){
         String name = node.getNom();
         if(this.globalTable.getVar(name) != null){
-            System.err.println("Two different variables cannot have the same name.");
+            System.err.println(name + "is already used by an other global variable.");
             System.exit(1);
         }
 
         this.globalTable.addVar(name, 1);
+
+        return null;
     }
 
     @Override
     public Void visit(SaDecTab node){
         String name = node.getNom();
         if(this.globalTable.getVar(name) != null){
-            System.err.println("Two different variables cannot have the same name.");
+            System.err.println(name + " is already used for an other global variable.");
             System.exit(2);
         }
 
         int size = node.getTaille();
         this.globalTable.addVar(name, size);
+
+        return null;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
 
         String name = node.getNom();
         if(this.globalTable.getFct(name) != null){
-            System.err.println("Two different functions cannot have the same name.");
+            System.err.println(name + "is already used for an other function.");
             System.exit(3);
         }
 
@@ -55,7 +59,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
                 SaDec parameter = parameters.getTete();
                 String parameterName = parameter.getNom();
                 if(this.localTable.getVar(parameterName) != null){
-                    System.err.println("Two different local variables cannot have the same name.");
+                    System.err.println(parameterName + "is already used for an other parameter.");
                     System.exit(4);
                 }
                 TsItemVar param = this.localTable.addParam(parameterName);
@@ -71,7 +75,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
                 SaDec variable = variables.getTete();
                 String variableName = variable.getNom();
                 if(this.localTable.getVar(variableName) != null){
-                    System.err.println("Two different local variables cannot have the same name.");
+                    System.err.println(variableName + "is already used by a parameter or an other variable.");
                     System.exit(5);
                 }
                 TsItemVar var = this.localTable.addVar(variableName, 1);
