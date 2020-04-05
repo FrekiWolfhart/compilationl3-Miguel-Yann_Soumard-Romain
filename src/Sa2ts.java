@@ -103,11 +103,17 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
             varExists = true;
         if(isGlobalVar(node.getNom()))
             varExists = true
+        if(varExists && node.tsItem.getTaille() > 1) {
+            System.err.println(node.getNom().concat(" is an integer, cannot be indiced"));
+            System.exit(13);
+        }
 
-        if (!exists) {
-            System.err.println(node.getNom().concat("has not yet been declared"))
+        if (!varExists) {
+            System.err.println(node.getNom().concat(" has not yet been declared"));
             System.exit(10);
         }
+
+        return null;
     }
 
     private boolean isLocalVar(String identif) {
@@ -120,11 +126,40 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
 
     @Override
     public Void visit(SaVarIndicee node){
+        if (node.getIndice() == null) {
+            System.err.println(node.getNom().concat(" Indice must be precised"));
+            System.exit(11);
+        }
+
+        if(!isGlobalVar) {
+            System.err.println(node.getNom().concat(" Arrays must be global"));
+            System.exit(12);
+        }
+
         return null;
     }
 
     @Override
     public Void visit(SaAppel node){
+        if(globalTable.getFct("main") == null|hasParam("main"))
+            printErrorAndExit(14, "main function uncorrectly defined");
+
+        if(!globalTable.getFct(node.getNom) == null)
+            printErrorAndExit(15, node.getNom() + " not defined");
+
+        TsItemFct func = globalTable.getFct(node.getNom());
+        if(func.getNbArgs != node.arguments.length)
+            printErrorAndExit(16, node.getNom() + " not defined");
+
         return null;
+    }
+
+    private boolean hasParam(String identif) {
+        return globalTable.getFct(identif).getNbArgs() > 0;
+    }
+
+    private void printErrorAndExit(int code, String message) {
+        System.err.println(message);
+        System.exit(code);
     }
 }
