@@ -29,8 +29,8 @@ cleanAll() {
 testAllFiles() {
     cd src
     for file in $(ls ../test/input|grep -i ".l$"); do
-        echo -n "$file: "
-        java Compiler ../test/input/$file
+       echo -n "$file: "
+        java Compiler ../test/input/$file ../test/input/$file
     done
     cd ..
 }
@@ -44,6 +44,15 @@ compareAllTrees() {
     cd ../..
 }
 
+compareAllTables() {
+  echo $PWD
+    for file in $(ls test/ts-ref); do
+        echo -n "$file: "
+        diff test/ts-ref/$file test/input/$file
+        echo
+    done
+    cd ../..
+}
 
 compile() {
     java -jar sablecc.jar src/grammaireL.sablecc
@@ -71,6 +80,7 @@ for arg in $@; do
         -c)         compile;;
         -t)         testAllFiles;;
         -T)         compareAllTrees;;
+        -Ts)        compareAllTables;;
         -clsc)      cleanSCFiles;;
         -clclass)   cleanDotClassFiles;;
         -clgr)      deleteSCDirectory;;
