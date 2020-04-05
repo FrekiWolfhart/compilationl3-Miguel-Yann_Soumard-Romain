@@ -11,7 +11,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
         this.localTable = this.globalTable;
         node.accept(this);
     }
-    
+
     @Override
     public Void visit(SaDecVar node){
         String name = node.getNom();
@@ -52,7 +52,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
 
         int parametersNumber = parameters.length();
 
-        this.localTable = new Ts();        
+        this.localTable = new Ts();
 
         if(parametersNumber > 0){
             for(int i = 0; i < parametersNumber; i++){
@@ -92,13 +92,39 @@ public class Sa2ts extends SaDepthFirstVisitor<Void>{
 
     @Override
     public Void visit(SaVarSimple node){
+        // On ne doit voir une utilisation de variable dans une fonction qu'après
+        // avoir parcouru un SaDecFonc et donc qu'après avoir récupéré la table locale
+        // de ce la fonction associée.
+        boolean varExists = false;
+
+        if(isLocalVar(node.getNom()))
+            varExists = true;
+        if(!isLocalVar(node.getNom()) && node.tsItem.isParam)
+            varExists = true;
+        if(isGlobalVar(node.getNom()))
+            varExists = true
+
+        if (!exists) {
+            System.err.println(node.getNom().concat("has not yet been declared"))
+            System.exit(10);
+        }
+    }
+
+    private boolean isLocalVar(String identif) {
+        return localTable.getVar(identif) != null;
+    }
+
+    private boolean isGlobalVar(String identif) {
+        return globalTable.getVar(identif) != null;
     }
 
     @Override
     public Void visit(SaVarIndicee node){
+        return null;
     }
 
     @Override
     public Void visit(SaAppel node){
+        return null;
     }
 }
