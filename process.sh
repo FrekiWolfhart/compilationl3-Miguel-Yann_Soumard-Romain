@@ -19,9 +19,23 @@ deleteSc2saFile() {
     [ -f src/sc2sa.java ] && [ ! -s src/sc2sa.java ] && rm src/sc2sa.java
 }
 
+cleanSaFiles() {
+    cd test/input
+    rm *.sa && echo "all *.sa files in test/input have been erased"
+    cd ../..
+}
+
+cleanTsFiles() {
+    cd test/input
+    rm *.ts && echo "all *.ts files in test/input have been erased"
+    cd ../..
+}
+
 cleanAll() {
     cleanDotClassFiles
     cleanSCFiles
+    cleanSaFiles
+    cleanTsFiles
     deleteSCDirectory
     deleteSc2saFile
 }
@@ -37,6 +51,7 @@ testAllFiles() {
 
 compareAllTrees() {
     cd test/compare_arbres
+    [ ! -e compare_arbres_xml ] && make compare_arbres_xml
     for file in $(ls ../sa-ref); do
         ./compare_arbres_xml ../sa-ref/$file ../input/$file
         echo
@@ -45,11 +60,13 @@ compareAllTrees() {
 }
 
 compareAllTables() {
-  echo $PWD
     for file in $(ls test/ts-ref); do
-        echo -n "$file: "
-        diff test/ts-ref/$file test/input/$file
-        echo
+        echo -en "$file: "
+        if [ -z "$(diff test/ts-ref/$file test/input/$file)" ];then
+          echo -e "\033[1;32mOk\e[m"
+        else
+          echo -e "\033[1;31mDifférences trouvées\e[m"
+        fi
     done
     cd ../..
 }

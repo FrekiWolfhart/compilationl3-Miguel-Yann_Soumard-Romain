@@ -10,7 +10,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
 
     public Sa2ts(SaNode node) {
-        System.out.println("Constructeur");
+        checkNullNode(node);
         this.globalTable = new Ts();
         this.localTable = null;
         this.currentParams = null;
@@ -25,8 +25,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
     @Override
     public Void visit(SaDecVar node) {
-        System.out.println("Déclaration variable");
-        assert (node != null);
+        checkNullNode(node);
 
         if (localTable == null) {
             assert (globalTable.getVar((node.getNom())) == null);
@@ -47,8 +46,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
     @Override
     public Void visit(SaDecTab node) {
-        System.out.println("Déclaration tableau");
-        assert (node != null);
+        checkNullNode(node);
 
         // Les tableaux sont toujours globaux
         assert (localTable == null);
@@ -68,18 +66,10 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
     @Override
     public Void visit(SaDecFonc node) {
-        System.out.println("Déclaration fonction");
-        assert (node != null);
+        checkNullNode(node);
 
         String name = node.getNom();
-        int nbArgs;
-
-        if (node.getParametres() == null)
-            nbArgs = 0;
-        else
-            nbArgs = node.getParametres().length();
-
-        System.out.println(node.getNom() + " nbArgs: " + nbArgs);
+        int nbArgs = node.getParametres() == null ? 0 : node.getParametres().length();
 
         // Vérifie que la fonction n'est pas déjà déclarée
         assert (globalTable.getFct(node.getNom()) != null);
@@ -98,19 +88,19 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
         // savoir quels sont les paramètres.
         if (nbArgs != 0) {
             SaLDec parameters = node.getParametres();
+
             for (int i = 0; i < nbArgs; i++) {
                 SaDec parameter = parameters.getTete();
                 String parameterName = parameter.getNom();
                 currentParams.put(parameterName, true);
                 parameters = parameters.getQueue();
             }
+
             if((parameters = node.getParametres()) != null) {
                 parameters.getTete().accept(this);
                 if(parameters.getQueue() != null) parameters.getQueue().accept(this);
             }
         }
-
-
 
         SaLDec vars = node.getVariable();
         if(vars != null) {
@@ -118,21 +108,14 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
             if(vars.getQueue() != null) vars.getQueue().accept(this);
         }
 
-
-        System.out.println("Sortie de la déclaration de fonction");
         return null;
     }
 
     @Override
     public Void visit(SaVarSimple node) {
-        // On ne doit voir une utilisation de variable dans une fonction qu'après
-        // avoir parcouru un SaDecFonc et donc qu'après avoir récupéré la table locale
-        // de ce la fonction associée.
-        System.out.println("Visite d'une variable simple");
-
         boolean varExists = false;
 
-        assert (node != null);
+        checkNullNode(node);
         assert (node.tsItem != null);
 
         if (isLocalVar(node.getNom()) ^ node.tsItem.isParam)
@@ -159,8 +142,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
     @Override
     public Void visit(SaVarIndicee node) {
-        System.out.println("Visite tableau");
-        assert (node != null);
+        checkNullNode(node);
         assert (node.tsItem != null);
 
         if (node.getIndice() == null)
@@ -175,8 +157,7 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
 
     @Override
     public Void visit(SaAppel node) {
-        System.out.println("Visite appel");
-        assert (node != null);
+        checkNullNode(node);
 
         if (globalTable.getFct("main") == null || hasParam("main"))
             printErrorAndExit(14, "main function uncorrectly defined");
@@ -200,5 +181,9 @@ public class Sa2ts extends SaDepthFirstVisitor<Void> {
         System.exit(code);
     }
 
+    private void checkNullNode(SaNode node) {
+        if (node == null)
+            printErrorAndExit(100, "Node does not exists");
+    }
 
 }
