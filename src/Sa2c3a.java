@@ -1,4 +1,4 @@
-public class Sc2c3a extends SaDepthFirstVisitor <C3aOperand>{
+public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
 
     private C3a c3a;
     private Ts globalTable;
