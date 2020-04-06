@@ -4,6 +4,13 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     private Ts globalTable;
     private Ts localTable;
 
+    public Sa2c3a(SaNode root, Ts table){
+        this.c3a = new C3a();
+        this.globalTable = table;
+        this.localTable = null;
+        root.accept(this);
+    }
+
     @Override
     public C3aOperand visit(SaDepthFirstVisitor node){
         return null;
