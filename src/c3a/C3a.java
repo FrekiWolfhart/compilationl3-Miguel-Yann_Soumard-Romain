@@ -9,10 +9,8 @@ import sa.*;
 
 public class C3a {
     public List<C3aInst> listeInst;
-    // compteur des temporaires, pour générer des noms uniques
-    private int tempCounter;
-    // étiquette de la prochaine instruction, on retarde l'ajout de l'étiquette
-    private C3aLabel nextLabel;
+    private int tempCounter;            // compteur des temporaires, pour générer des noms uniques
+    private C3aLabel nextLabel;         // étiquette de la prochaine instruction, on retarde l'ajout de l'étiquette
     private int labelCounter;
     public C3aConstant True;
     public C3aConstant False;
@@ -51,12 +49,6 @@ public class C3a {
             System.err.println("WARNING : Étiquette précédente ignorée" + this.nextLabel.getNumber());
         }
         this.nextLabel = label;
-        //	if(etiquette->oper_type == O_ETIQUETTE){
-        //   etiquette->u.oper_etiquette.ligne = c3a->next;
-        //}
-        //if(etiquette->oper_type == O_FCT){
-        //   etiquette->u.oper_fct->adresse = c3a->next;
-        //}
     }
 
     public void affiche(String baseFileName) {
