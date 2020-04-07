@@ -1,3 +1,7 @@
+import c3a.*;
+import sa.*;
+import ts.Ts;
+
 public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
 
     private C3a c3a;
@@ -11,28 +15,74 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
         root.accept(this);
     }
 
-    @Override
-    public C3aOperand visit(SaDepthFirstVisitor node){
-        return null;
-    }
-
+    //TODO: Attention, très probablement faux
     @Override
     public C3aOperand visit(SaExpEqual node){
+        SaExp op1 = node.getOp1();
+        SaExp op2 = node.getOp2();
+
+        // Récupére la valeur des expressions
+        C3aOperand E1 = visit(op1);
+        C3aOperand E2 = visit(op2);
+
+        // Voir les actions sémantiques du cours pour comprendre
+        C3aLabel e1 = c3a.newAutoLabel();
+        C3aLabel e2 = c3a.newAutoLabel();
+        C3aTemp E = c3a.newTemp();
+
+        C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(E1, E2, e1, "if E1 == E2 goto e1");
+        C3aInstAffect line2 = new C3aInstAffect(E, new C3aConstant(0), "E.t = 0");
+        C3aInstJump line3 = new C3aInstJump(e2, "jump e2");
+        C3aInstAffect line4 = new C3aInstAffect(E, new C3aConstant(1), "E.t = 1");
+
+        c3a.ajouteInst(line1);
+        c3a.ajouteInst(line2);
+        c3a.ajouteInst(line3);
+        c3a.addLabelToNextInst(e1);
+        c3a.ajouteInst(line4);
+        c3a.addLabelToNextInst(e2);
+        c3a.ajouteInst(null);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaVarSimple node){
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
     public C3aOperand visit(SaInstBloc node){
-        return null;
+        return visit(node.getVal());
     }
 
     @Override
     public C3aOperand visit(SaExpInf node){
+        SaExp op1 = node.getOp1();
+        SaExp op2 = node.getOp2();
+
+        // Récupére la valeur des expressions
+        C3aOperand E1 = visit(op1);
+        C3aOperand E2 = visit(op2);
+
+        // Voir les actions sémantiques du cours pour comprendre
+        C3aLabel e1 = c3a.newAutoLabel();
+        C3aLabel e2 = c3a.newAutoLabel();
+        C3aTemp E = c3a.newTemp();
+
+        C3aInstJumpIfLess line1 = new C3aInstJumpIfLess(E1, E2, e1, "if E1 == E2 goto e1");
+        C3aInstAffect line2 = new C3aInstAffect(E, new C3aConstant(0), "E.t = 0");
+        C3aInstJump line3 = new C3aInstJump(e2, "jump e2");
+        C3aInstAffect line4 = new C3aInstAffect(E, new C3aConstant(1), "E.t = 1");
+
+        c3a.ajouteInst(line1);
+        c3a.ajouteInst(line2);
+        c3a.ajouteInst(line3);
+        c3a.addLabelToNextInst(e1);
+        c3a.ajouteInst(line4);
+        c3a.addLabelToNextInst(e2);
+        c3a.ajouteInst(null);
+
         return null;
     }
 
@@ -43,6 +93,31 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
 
     @Override
     public C3aOperand visit(SaExpNot node){
+        SaExp op1 = node.getOp1();
+        SaExp op2 = node.getOp2();
+
+        // Récupére la valeur des expressions
+        C3aOperand E1 = visit(op1);
+        C3aOperand E2 = visit(op2);
+
+        // Voir les actions sémantiques du cours pour comprendre
+        C3aLabel e1 = c3a.newAutoLabel();
+        C3aLabel e2 = c3a.newAutoLabel();
+        C3aTemp E = c3a.newTemp();
+
+        C3aInstJumpIfNotEqual line1 = new C3aInstJumpIfNotEqual(E1, E2, e1, "if E1 == E2 goto e1");
+        C3aInstAffect line2 = new C3aInstAffect(E, new C3aConstant(0), "E.t = 0");
+        C3aInstJump line3 = new C3aInstJump(e2, "jump e2");
+        C3aInstAffect line4 = new C3aInstAffect(E, new C3aConstant(1), "E.t = 1");
+
+        c3a.ajouteInst(line1);
+        c3a.ajouteInst(line2);
+        c3a.ajouteInst(line3);
+        c3a.addLabelToNextInst(e1);
+        c3a.ajouteInst(line4);
+        c3a.addLabelToNextInst(e2);
+        c3a.ajouteInst(null);
+
         return null;
     }
 
@@ -97,11 +172,6 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     }
 
     @Override
-    public C3aOperand visit(SaNode node){
-        return null;
-    }
-
-    @Override
     public C3aOperand visit(SaInstRetour node){
         return null;
     }
@@ -117,17 +187,7 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     }
 
     @Override
-    public C3aOperand visit(SaInst node){
-        return null;
-    }
-
-    @Override
     public C3aOperand visit(SaDecVar node){
-        return null;
-    }
-
-    @Override
-    public C3aOperand visit(SaEnvironment node){
         return null;
     }
 
@@ -147,16 +207,6 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     }
 
     @Override
-    public C3aOperand visit(SaVisitor node){
-        return null;
-    }
-
-    @Override
-    public C3aOperand visit(SaDec node){
-        return null;
-    }
-
-    @Override
     public C3aOperand visit(SaExpAppel node){
         return null;
     }
@@ -172,11 +222,6 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     }
 
     @Override
-    public C3aOperand visit(Sa2Xml node){
-        return null;
-    }
-
-    @Override
     public C3aOperand visit(SaExpSub node){
         return null;
     }
@@ -187,17 +232,7 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     }
 
     @Override
-    public C3aOperand visit(SaEval node){
-        return null;
-    }
-
-    @Override
     public C3aOperand visit(SaDecTab node){
-        return null;
-    }
-
-    @Override
-    public C3aOperand visit(SaVar node){
         return null;
     }
 
