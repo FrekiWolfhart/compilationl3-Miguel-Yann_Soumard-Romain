@@ -49,8 +49,6 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
     @Override
     public C3aOperand visit(SaVarSimple node){
         return new C3aVar(node.tsItem, null);
-
-        return null;
     }
 
     @Override
