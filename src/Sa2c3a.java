@@ -123,6 +123,20 @@ public class Sa2c3a extends SaDepthFirstVisitor <C3aOperand>{
 
     @Override
     public C3aOperand visit(SaInstAffect node){
+        C3aOperand var = null;
+
+        if(node.getLhs() instanceof SaVarSimple) {
+            var = visit((SaVarSimple) node.getLhs());
+        } else if (node.getLhs() instanceof SaVarIndicee) {
+            var = visit((SaVarIndicee) node.getLhs());
+        }
+
+        C3aOperand exp = visit(node.getRhs());
+
+        C3aInstAffect affect = new C3aInstAffect(var, exp,"var = expr");
+
+        c3a.ajouteInst(affect);
+
         return null;
     }
 
