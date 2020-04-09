@@ -5,13 +5,9 @@ import ts.Ts;
 public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     private C3a c3a;
-    private Ts globalTable;
-    private Ts localTable;
 
     public Sa2c3a(SaNode root, Ts table) {
         this.c3a = new C3a();
-        this.globalTable = table;
-        this.localTable = null;
         root.accept(this);
     }
 
@@ -154,6 +150,9 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
     public C3aOperand visit(SaLInst node) {
         SaInst head = node.getTete();
 
+        if (node.getQueue() == null)
+            return null;
+
         if (head instanceof SaAppel)
             visit((SaAppel) head);
         else if (head instanceof SaInstAffect)
@@ -164,14 +163,14 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
             visit((SaInstEcriture) head);
         else if (head instanceof SaInstRetour)
             visit((SaInstRetour) head);
-        else if (head instanceof  SaInstSi)
+        else if (head instanceof SaInstSi)
             visit((SaInstSi) head);
-        else if (head instanceof  SaInstTantQue)
+        else if (head instanceof SaInstTantQue)
             visit((SaInstTantQue) head);
 
         visit(node.getQueue());
 
-            return null;
+        return null;
     }
 
     @Override
@@ -202,52 +201,140 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaExpAdd node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstAdd addition = new C3aInstAdd(op1, op2, result, "E.t = E1.T + E2.t");
+        c3a.ajouteInst(addition);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaProg node) {
+        visit(node.getFonctions());
+        visit(node.getVariables());
+
         return null;
     }
 
+
     @Override
     public C3aOperand visit(SaExpOr node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aOperand tmp = c3a.newTemp();
+        C3aLabel e1 = c3a.newAutoLabel();
+        C3aLabel e2 = c3a.newAutoLabel();
+
+        C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(op1, c3a.True, e1, "if E1.t = 1 goto e1");
+        C3aInstJumpIfEqual line2 = new C3aInstJumpIfEqual(op2, c3a.True, e1, "if E2.t = 1 goto e1");
+        C3aInstAffect line3 = new C3aInstAffect(tmp, c3a.False, "E.T = 0");
+        C3aInstJump line4 = new C3aInstJump(e2, "jump e2");
+        C3aInstAffect line5 = new C3aInstAffect(tmp, c3a.True, "E.t = 1");
+
+        c3a.ajouteInst(line1);
+        c3a.ajouteInst(line2);
+        c3a.ajouteInst(line3);
+        c3a.ajouteInst(line4);
+        c3a.addLabelToNextInst(e1);
+        c3a.ajouteInst(line5);
+        c3a.addLabelToNextInst(e2);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaExpMult node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstMult mult = new C3aInstMult(op1, op2, result, "E.t = E1.T * E2.t");
+        c3a.ajouteInst(mult);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaInstEcriture node) {
+        C3aOperand exp = visit(node.getArg());
+        C3aTemp tmp = c3a.newTemp();
+
+        C3aInstWrite lecture = new C3aInstWrite(exp, "E.T = read(expr)");
+        lecture.result = tmp;
+
+        c3a.ajouteInst(lecture);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaExpInt node) {
-        return null;
+        return new C3aConstant(node.getVal());
     }
 
     @Override
     public C3aOperand visit(SaInstRetour node) {
+        C3aOperand value = visit(node.getVal());
+        C3aInstReturn returnVal = new C3aInstReturn(value, "return value");
+
+        c3a.ajouteInst(returnVal);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaLExp node) {
+        SaExp head = node.getTete();
+
+        if (head instanceof SaExpAdd)
+            visit((SaExpAdd) head);
+        else if (head instanceof SaExpSub)
+            visit((SaExpSub) head);
+        else if (head instanceof SaExpMult)
+            visit((SaExpMult) head);
+        else if (head instanceof SaExpDiv)
+            visit((SaExpDiv) head);
+        else if (head instanceof SaExpAnd)
+            visit((SaExpAnd) head);
+        else if (head instanceof SaExpOr)
+            visit((SaExpOr) head);
+        else if (head instanceof SaExpEqual)
+            visit((SaExpEqual) head);
+        else if (head instanceof SaExpInf)
+            visit((SaExpInf) head);
+        else if (head instanceof SaExpInt)
+            visit((SaExpInt) head);
+        else if (head instanceof SaExpLire)
+            visit((SaExpLire) head);
+        else if (head instanceof SaExpVar)
+            visit((SaExpVar) head);
+        else if (head instanceof SaExpNot)
+            visit((SaExpNot) head);
+        else if (head instanceof SaAppel)
+            visit((SaAppel) head);
+        else if (head instanceof SaExpAppel)
+            visit((SaExpAppel) head);
+
+        if (node.getQueue() != null)
+            visit(node.getQueue());
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaDecFonc node) {
-        return null;
+        return new C3aFunction(node.tsItem);
     }
 
     @Override
     public C3aOperand visit(SaDecVar node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
@@ -262,41 +349,70 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaLDec node) {
+        SaDec head = node.getTete();
+
+        if (head instanceof SaDecFonc)
+            visit((SaDecFonc) head);
+        else if (head instanceof SaDecTab)
+            visit((SaDecTab) head);
+        else if (head instanceof SaDecVar)
+            visit((SaDecVar) head);
+
+        if (node.getQueue() != null)
+            visit(node.getQueue());
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaExpAppel node) {
-        return null;
+        return visit(node.getVal());
     }
 
     @Override
     public C3aOperand visit(SaVarIndicee node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
     public C3aOperand visit(SaAppel node) {
-        return null;
+        return new C3aFunction(node.tsItem);
     }
 
     @Override
     public C3aOperand visit(SaExpSub node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstSub sub = new C3aInstSub(op1, op2, result, "E.t = E1.T - E2.t");
+        c3a.ajouteInst(sub);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaExpLire node) {
+        c3a.ajouteInst(new C3aInstRead(c3a.newTemp(), "lire()"));
         return null;
     }
 
     @Override
     public C3aOperand visit(SaDecTab node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
     public C3aOperand visit(SaExpDiv node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstDiv div = new C3aInstDiv(op1, op2, result, "E.t = E1.T / E2.t");
+        c3a.ajouteInst(div);
+
         return null;
     }
 
