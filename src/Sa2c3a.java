@@ -34,6 +34,41 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         return null;
     }
 
+    @Override
+    public C3aOperand visit(SaExp node){
+
+        if (node instanceof SaExpAdd)
+            visit((SaExpAdd) node);
+        else if (node instanceof SaExpSub)
+            visit((SaExpSub) node);
+        else if (node instanceof SaExpMult)
+            visit((SaExpMult) node);
+        else if (node instanceof SaExpDiv)
+            visit((SaExpDiv) node);
+        else if (node instanceof SaExpAnd)
+            visit((SaExpAnd) node);
+        else if (node instanceof SaExpOr)
+            visit((SaExpOr) node);
+        else if (node instanceof SaExpEqual)
+            visit((SaExpEqual) node);
+        else if (node instanceof SaExpInf)
+            visit((SaExpInf) node);
+        else if (node instanceof SaExpInt)
+            visit((SaExpInt) node);
+        else if (node instanceof SaExpLire)
+            visit((SaExpLire) node);
+        else if (node instanceof SaExpVar)
+            visit((SaExpVar) node);
+        else if (node instanceof SaExpNot)
+            visit((SaExpNot) node);
+        else if (node instanceof SaAppel)
+            visit((SaAppel) node);
+        else if (node instanceof SaExpAppel)
+            visit((SaExpAppel) node);
+
+        return null;
+    }
+
     //TODO: Attention, très probablement faux
     @Override
     public C3aOperand visit(SaExpEqual node) {
@@ -102,12 +137,6 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         c3a.addLabelToNextInst(e2);
         c3a.ajouteInst(null);
 
-        return null;
-    }
-
-
-    @Override
-    public C3aOperand visit(SaExp node) {
         return null;
     }
 
@@ -232,7 +261,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         C3aInstAdd addition = new C3aInstAdd(op1, op2, result, "E.t = E1.T + E2.t");
         c3a.ajouteInst(addition);
 
-        return null;
+        return result;
     }
 
     @Override
@@ -280,7 +309,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         C3aInstMult mult = new C3aInstMult(op1, op2, result, "E.t = E1.T * E2.t");
         c3a.ajouteInst(mult);
 
-        return null;
+        return result;
     }
 
     @Override
@@ -431,7 +460,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaVarIndicee node) {
-        return new C3aVar(node.tsItem, null);
+        return new C3aVar(node.tsItem, visit(node.getIndice()));
     }
 
     @Override
@@ -449,7 +478,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         C3aInstSub sub = new C3aInstSub(op1, op2, result, "E.t = E1.T - E2.t");
         c3a.ajouteInst(sub);
 
-        return null;
+        return result;
     }
 
     @Override
@@ -460,7 +489,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaDecTab node) {
-        return new C3aVar(node.tsItem, null);
+        return new C3aVar(node.tsItem, new C3aConstant(node.getTaille()));
     }
 
     @Override
@@ -473,7 +502,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         C3aInstDiv div = new C3aInstDiv(op1, op2, result, "E.t = E1.T / E2.t");
         c3a.ajouteInst(div);
 
-        return null;
+        return result;
     }
 
 }
