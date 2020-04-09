@@ -176,6 +176,27 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaExpAnd node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aOperand tmp = c3a.newTemp();
+        C3aLabel e1 = c3a.newAutoLabel();
+        C3aLabel e2 = c3a.newAutoLabel();
+
+        C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(op1, c3a.False, e1, "if E1.t = 0 goto e1");
+        C3aInstJumpIfEqual line2 = new C3aInstJumpIfEqual(op2, c3a.False, e1, "if E2.t = 0 goto e1");
+        C3aInstAffect line3 = new C3aInstAffect(tmp, c3a.True, "E.T = 1");
+        C3aInstJump line4 = new C3aInstJump(e2, "jump e2");
+        C3aInstAffect line5 = new C3aInstAffect(tmp, c3a.False, "E.t = 0");
+
+        c3a.ajouteInst(line1);
+        c3a.ajouteInst(line2);
+        c3a.ajouteInst(line3);
+        c3a.ajouteInst(line4);
+        c3a.addLabelToNextInst(e1);
+        c3a.ajouteInst(line5);
+        c3a.addLabelToNextInst(e2);
+
         return null;
     }
 
