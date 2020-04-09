@@ -277,7 +277,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaAppel node) {
-        return null;
+        return new C3aFunction(node.tsItem);
     }
 
     @Override
