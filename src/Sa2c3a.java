@@ -5,13 +5,9 @@ import ts.Ts;
 public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     private C3a c3a;
-    private Ts globalTable;
-    private Ts localTable;
 
     public Sa2c3a(SaNode root, Ts table) {
         this.c3a = new C3a();
-        this.globalTable = table;
-        this.localTable = null;
         root.accept(this);
     }
 
@@ -266,9 +262,11 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaInstEcriture node) {
-        C3aOperand lire = visit(node.getArg());
+        C3aOperand exp = visit(node.getArg());
+        C3aTemp tmp = c3a.newTemp();
 
-        C3aInstRead lecture = new C3aInstRead(lire, "E.T = read(expr)");
+        C3aInstWrite lecture = new C3aInstWrite(exp, "E.T = read(expr)");
+        lecture.result = tmp;
 
         c3a.ajouteInst(lecture);
 
@@ -292,17 +290,51 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaLExp node) {
+        SaExp head = node.getTete();
+
+        if (head instanceof SaExpAdd)
+            visit((SaExpAdd) head);
+        else if (head instanceof SaExpSub)
+            visit((SaExpSub) head);
+        else if (head instanceof SaExpMult)
+            visit((SaExpMult) head);
+        else if (head instanceof SaExpDiv)
+            visit((SaExpDiv) head);
+        else if (head instanceof SaExpAnd)
+            visit((SaExpAnd) head);
+        else if (head instanceof SaExpOr)
+            visit((SaExpOr) head);
+        else if (head instanceof SaExpEqual)
+            visit((SaExpEqual) head);
+        else if (head instanceof SaExpInf)
+            visit((SaExpInf) head);
+        else if (head instanceof SaExpInt)
+            visit((SaExpInt) head);
+        else if (head instanceof SaExpLire)
+            visit((SaExpLire) head);
+        else if (head instanceof SaExpVar)
+            visit((SaExpVar) head);
+        else if (head instanceof SaExpNot)
+            visit((SaExpNot) head);
+        else if (head instanceof SaAppel)
+            visit((SaAppel) head);
+        else if (head instanceof SaExpAppel)
+            visit((SaExpAppel) head);
+
+        if (node.getQueue() != null)
+            visit(node.getQueue());
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaDecFonc node) {
-        return null;
+        return new C3aFunction(node.tsItem);
     }
 
     @Override
     public C3aOperand visit(SaDecVar node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
@@ -334,12 +366,12 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaExpAppel node) {
-        return null;
+        return visit(node.getVal());
     }
 
     @Override
     public C3aOperand visit(SaVarIndicee node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
@@ -349,21 +381,38 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaExpSub node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstSub sub = new C3aInstSub(op1, op2, result, "E.t = E1.T - E2.t");
+        c3a.ajouteInst(sub);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaExpLire node) {
+        c3a.ajouteInst(new C3aInstRead(c3a.newTemp(), "lire()"));
         return null;
     }
 
     @Override
     public C3aOperand visit(SaDecTab node) {
-        return null;
+        return new C3aVar(node.tsItem, null);
     }
 
     @Override
     public C3aOperand visit(SaExpDiv node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstDiv div = new C3aInstDiv(op1, op2, result, "E.t = E1.T / E2.t");
+        c3a.ajouteInst(div);
+
         return null;
     }
 
