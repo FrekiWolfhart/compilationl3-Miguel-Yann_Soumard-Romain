@@ -72,7 +72,6 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         return null;
     }
 
-    //TODO: Attention, très probablement faux
     @Override
     public C3aOperand visit(SaExpEqual node) {
         SaExp op1 = node.getOp1();
@@ -84,23 +83,18 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
         // Voir les actions sémantiques du cours pour comprendre
         C3aLabel e1 = c3a.newAutoLabel();
-        C3aLabel e2 = c3a.newAutoLabel();
         C3aTemp E = c3a.newTemp();
 
         C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(E1, E2, e1, "if E1 == E2 goto e1");
-        C3aInstAffect line2 = new C3aInstAffect(E, new C3aConstant(0), "E.t = 0");
-        C3aInstJump line3 = new C3aInstJump(e2, "jump e2");
-        C3aInstAffect line4 = new C3aInstAffect(E, new C3aConstant(1), "E.t = 1");
+        C3aInstAffect line2 = new C3aInstAffect(c3a.False, E, "E.t = 0");
+        C3aInstAffect line4 = new C3aInstAffect(c3a.True, E, "E.t = 1");
 
+        c3a.ajouteInst(line4);
         c3a.ajouteInst(line1);
         c3a.ajouteInst(line2);
-        c3a.ajouteInst(line3);
         c3a.addLabelToNextInst(e1);
-        c3a.ajouteInst(line4);
-        c3a.addLabelToNextInst(e2);
-        c3a.ajouteInst(null);
 
-        return null;
+        return E;
     }
 
     @Override
@@ -136,31 +130,24 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
     @Override
     public C3aOperand visit(SaExpNot node) {
         SaExp op1 = node.getOp1();
-        SaExp op2 = node.getOp2();
 
-        // Récupére la valeur des expressions
+        // Récupérer la valeur des expressions
         C3aOperand E1 = visit(op1);
-        C3aOperand E2 = visit(op2);
 
         // Voir les actions sémantiques du cours pour comprendre
         C3aLabel e1 = c3a.newAutoLabel();
-        C3aLabel e2 = c3a.newAutoLabel();
         C3aTemp E = c3a.newTemp();
 
-        C3aInstJumpIfNotEqual line1 = new C3aInstJumpIfNotEqual(E1, E2, e1, "if E1 == E2 goto e1");
-        C3aInstAffect line2 = new C3aInstAffect(E, new C3aConstant(0), "E.t = 0");
-        C3aInstJump line3 = new C3aInstJump(e2, "jump e2");
-        C3aInstAffect line4 = new C3aInstAffect(E, new C3aConstant(1), "E.t = 1");
+        C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(E1, c3a.False, e1, "if E1 == E2 goto e1");
+        C3aInstAffect line2 = new C3aInstAffect(c3a.False, E, "E.t = 0");
+        C3aInstAffect line4 = new C3aInstAffect(c3a.True, E, "E.t = 1");
 
+        c3a.ajouteInst(line4);
         c3a.ajouteInst(line1);
         c3a.ajouteInst(line2);
-        c3a.ajouteInst(line3);
         c3a.addLabelToNextInst(e1);
-        c3a.ajouteInst(line4);
-        c3a.addLabelToNextInst(e2);
-        c3a.ajouteInst(null);
 
-        return null;
+        return E;
     }
 
     @Override
@@ -234,21 +221,21 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         C3aLabel e1 = c3a.newAutoLabel();
         C3aLabel e2 = c3a.newAutoLabel();
 
-        C3aInstJumpIfEqual line1 = new C3aInstJumpIfEqual(op1, c3a.True, e1, "if E1.t = 1 goto e1");
-        C3aInstJumpIfEqual line2 = new C3aInstJumpIfEqual(op2, c3a.True, e1, "if E2.t = 1 goto e1");
-        C3aInstAffect line3 = new C3aInstAffect(tmp, c3a.False, "E.T = 0");
-        C3aInstJump line4 = new C3aInstJump(e2, "jump e2");
-        C3aInstAffect line5 = new C3aInstAffect(tmp, c3a.True, "E.t = 1");
+        C3aInstJumpIfNotEqual line1 = new C3aInstJumpIfNotEqual(op1, c3a.False, e2, "if E1.t != 0 goto e2");
+        C3aInstJumpIfNotEqual line2 = new C3aInstJumpIfNotEqual(op2, c3a.False, e2, "if E2.t != 0 goto e2");
+        C3aInstAffect line3 = new C3aInstAffect(c3a.False, tmp, " E.t = 0");
+        C3aInstJump line4 = new C3aInstJump(e1, "jump e2");
+        C3aInstAffect line5 = new C3aInstAffect(c3a.True, tmp, " E.t = 1");
 
         c3a.ajouteInst(line1);
         c3a.ajouteInst(line2);
         c3a.ajouteInst(line3);
         c3a.ajouteInst(line4);
-        c3a.addLabelToNextInst(e1);
-        c3a.ajouteInst(line5);
         c3a.addLabelToNextInst(e2);
+        c3a.ajouteInst(line5);
+        c3a.addLabelToNextInst(e1);
 
-        return null;
+        return tmp;
     }
 
     @Override
