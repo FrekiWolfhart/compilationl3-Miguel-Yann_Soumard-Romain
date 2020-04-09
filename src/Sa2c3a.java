@@ -202,6 +202,14 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaExpAdd node) {
+        C3aOperand op1 = visit(node.getOp1());
+        C3aOperand op2 = visit(node.getOp2());
+
+        C3aTemp result = c3a.newTemp();
+
+        C3aInstAdd addition = new C3aInstAdd(op1, op2, result, "E.t = E1.T + E2.t");
+        c3a.ajouteInst(addition);
+
         return null;
     }
 
