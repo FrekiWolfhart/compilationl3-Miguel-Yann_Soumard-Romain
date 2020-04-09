@@ -282,6 +282,11 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaInstRetour node) {
+        C3aOperand value = visit(node.getVal());
+        C3aInstReturn returnVal = new C3aInstReturn(value, "return value");
+
+        c3a.ajouteInst(returnVal);
+
         return null;
     }
 
