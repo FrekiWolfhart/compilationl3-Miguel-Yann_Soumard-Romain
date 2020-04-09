@@ -11,6 +11,29 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         root.accept(this);
     }
 
+    public C3a getC3a(){
+        return this.c3a;
+    }
+    
+    public C3aOperand visit(SaInst node){
+        if (node instanceof SaAppel)
+            visit((SaAppel) node);
+        else if (node instanceof SaInstAffect)
+            visit((SaInstAffect) node);
+        else if (node instanceof SaInstBloc)
+            visit((SaInstBloc) node);
+        else if (node instanceof SaInstEcriture)
+            visit((SaInstEcriture) node);
+        else if (node instanceof SaInstRetour)
+            visit((SaInstRetour) node);
+        else if (node instanceof SaInstSi)
+            visit((SaInstSi) node);
+        else if (node instanceof SaInstTantQue)
+            visit((SaInstTantQue) node);
+
+        return null;
+    }
+
     //TODO: Attention, très probablement faux
     @Override
     public C3aOperand visit(SaExpEqual node) {
@@ -339,11 +362,48 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaInstTantQue node) {
+        // Création des labels
+        C3aLabel test = c3a.newAutoLabel();
+        C3aLabel suite = c3a.newAutoLabel();
+
+        // Création des opérandes
+        C3aOperand codeTest = visit(node.getTest());
+
+        // Création des instructions
+        C3aInstJumpIfEqual whileTest = new C3aInstJumpIfEqual(codeTest, c3a.False, suite, "if E.t == 0, goto suite");
+        C3aInstJump redo = new C3aInstJump(test, "goto test");
+
+        // Génération du code c3a
+        c3a.addLabelToNextInst(test);
+        c3a.ajouteInst(whileTest);
+        visit(node.getFaire());        
+        c3a.ajouteInst(redo);
+        c3a.addLabelToNextInst(suite);
+
         return null;
     }
 
     @Override
     public C3aOperand visit(SaInstSi node) {
+        // Création des labels
+        C3aLabel faux = c3a.newAutoLabel();
+        C3aLabel suite = c3a.newAutoLabel();
+
+        // Création des opérandes
+        C3aOperand codeTest = visit(node.getTest());
+
+        // Création des instructions
+        C3aInstJumpIfEqual ifTest = new C3aInstJumpIfEqual(codeTest, c3a.False, faux, "if E.t == 0, goto faux");
+        C3aInstJump cont = new C3aInstJump(suite, "goto suite");
+
+        // Génération du code c3a
+        c3a.ajouteInst(ifTest);
+        visit(node.getAlors());
+        c3a.ajouteInst(cont);
+        c3a.addLabelToNextInst(faux);
+        visit(node.getSinon());
+        c3a.addLabelToNextInst(suite);
+
         return null;
     }
 
