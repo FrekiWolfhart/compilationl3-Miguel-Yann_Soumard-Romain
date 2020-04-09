@@ -154,6 +154,9 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
     public C3aOperand visit(SaLInst node) {
         SaInst head = node.getTete();
 
+        if (node.getQueue() == null)
+            return null;
+
         if (head instanceof SaAppel)
             visit((SaAppel) head);
         else if (head instanceof SaInstAffect)
@@ -215,8 +218,12 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaProg node) {
+        visit(node.getFonctions());
+        visit(node.getVariables());
+
         return null;
     }
+
 
     @Override
     public C3aOperand visit(SaExpOr node) {
@@ -270,6 +277,18 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
 
     @Override
     public C3aOperand visit(SaLDec node) {
+        SaDec head = node.getTete();
+
+        if (head instanceof SaDecFonc)
+            visit((SaDecFonc) head);
+        else if (head instanceof SaDecTab)
+            visit((SaDecTab) head);
+        else if (head instanceof SaDecVar)
+            visit((SaDecVar) head);
+
+        if (node.getQueue() != null)
+            visit(node.getQueue());
+
         return null;
     }
 
